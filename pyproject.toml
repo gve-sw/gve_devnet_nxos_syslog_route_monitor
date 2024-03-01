@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "gve_devnet_nxos_syslog_route_monitor"
+version = "1.0.0"
+description = "Monitor NX-OS route changes & send alerts via syslog"
+authors = ["Matt Schmitz <mattsc@cisco.com>"]
+license = "Cisco Sample Code License, Version 1.1"
+readme = "README.md"
+homepage = "https://github.com/gve-sw/"
+repository = "https://github.com/gve-sw/gve_devnet_nxos_syslog_route_monitor"
+
+[tool.poetry.dependencies]
+python = "^3.7.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
