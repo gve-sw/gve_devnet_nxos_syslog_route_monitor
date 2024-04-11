@@ -36,26 +36,50 @@ def get_routes() -> dict:
     if isinstance(prefixes, list):
         for prefix in prefixes:
             # Skip connected / interface routes
-            if prefix["attached"] == "true":
-                continue
+            # if prefix["attached"] == "true":
+            #    continue
             route = prefix["ipprefix"]
+            # Check if multiple next-hops
+            if isinstance(prefix["TABLE_path"]["ROW_path"], list):
+                for nexthop in prefix["TABLE_path"]["ROW_path"]:
+                    prefix_list.append(
+                        {
+                            route: {
+                                "nexthop": nexthop["ipnexthop"],
+                                "proto": nexthop["clientname"],
+                            }
+                        }
+                    )
+            else:
+                prefix_list.append(
+                    {
+                        route: {
+                            "nexthop": prefix["TABLE_path"]["ROW_path"]["ipnexthop"],
+                            "proto": prefix["TABLE_path"]["ROW_path"]["clientname"],
+                        }
+                    }
+                )
+    elif isinstance(prefixes, dict):
+        # Check if multiple next-hops
+        if isinstance(prefixes["TABLE_path"]["ROW_path"], list):
+            for nexthop in prefixes["TABLE_path"]["ROW_path"]:
+                prefix_list.append(
+                    {
+                        prefixes["ipprefix"]: {
+                            "nexthop": nexthop["ipnexthop"],
+                            "proto": nexthop["clientname"],
+                        }
+                    }
+                )
+        else:
             prefix_list.append(
                 {
-                    route: {
-                        "nexthop": prefix["TABLE_path"]["ROW_path"]["ipnexthop"],
-                        "proto": prefix["TABLE_path"]["ROW_path"]["clientname"],
+                    prefixes["ipprefix"]: {
+                        "nexthop": prefixes["TABLE_path"]["ROW_path"]["ipnexthop"],
+                        "proto": prefixes["TABLE_path"]["ROW_path"]["clientname"],
                     }
                 }
             )
-    elif isinstance(prefixes, dict):
-        prefix_list.append(
-            {
-                prefixes["ipprefix"]: {
-                    "nexthop": prefixes["TABLE_path"]["ROW_path"]["ipnexthop"],
-                    "proto": prefixes["TABLE_path"]["ROW_path"]["clientname"],
-                }
-            }
-        )
     print(f"Done. Collected {len(prefix_list)} routes from routing table.")
     return prefix_list
 
